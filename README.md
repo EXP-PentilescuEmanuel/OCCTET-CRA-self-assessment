@@ -1,4 +1,4 @@
-# OCCTET-CRA-self-assessment
+	# OCCTET-CRA-self-assessment
 
 OCCTET is a free, open-source self-assessment platform that helps organisations — especially SMEs — measure their preparedness against the EU Cyber Resilience Act (CRA). The project is part of the Open CyberSecurity Compliance Toolkit (OCCTET) and is funded by the EU Digital Europe Programme.
 
@@ -39,4 +39,46 @@ If you plan larger feature work or architecture changes, open an issue first to 
 ## Issues & support
 - Use the repository Issues for bug reports, feature requests, and questions.
 - For project-related inquiries, refer to the project website: https://occtet.eu
+
+# OCCTET — Backend (exp.Backend)
+
+This document describes the backend part of the repository, how it is configured and how to run it locally for development.
+
+## Overview
+The backend is an ASP.NET Core 8 application that provides authentication, survey management, email delivery, and persistence to PostgreSQL. Key features:
+- ASP.NET Core 8 Web API with Identity (EF Core + PostgreSQL)
+- Azure Key Vault backed secrets (production)
+- JWT authentication 
+- Services: email, surveys, organisations, reports, copilot agent, repositories, etc.
+- Email templating using files under `wwwroot/EmailTemplates`
+- Data protection keys persisted to disk (configured under `exp.Backend`)
+- Rate limiting (sliding window)
+- Serilog file logging
+
+## Prerequisites
+- .NET 8 SDK
+- PostgreSQL (for local DB runs or migrations)
+- Azure Key Vault (for production secrets) OR local secrets/environment variables for development
+- Visual Studio 2022 or VS Code (optional)
+- Node/NPM only required for frontend work
+
+## Important paths & files
+- Backend project: `exp.Backend` (run and debug this project)
+- Email templates: `wwwroot/EmailTemplates` (templates referenced by `EmailService`)
+- DataProtection keys (development): `..\exp.Backend\DataProtectionKeys`
+- Serilog file: `logs/myapp.txt`
+
+## Configuration & Secrets
+Production expects secrets from Azure Key Vault (see `Program.cs`). The application reads these Key Vault secrets (examples):
+- `ConnectionString`
+- `JWTTokenSecret`
+- `SmtpHost`, `SmtpPort`, `SmtpUser`, `SmtpPass`, `EmailFrom`
+- `ApplicationUrl`, `EmailContact`, `RecaptchaSecretKey`, `AgentCopilotBearer`
+
+Locally you can provide the same values using:
+- environment variables, or
+- `appsettings.Development.json`, or
+- `dotnet user-secrets` 
+
+Example `appsettings.Development.json` (place in `exp.Backend`):
 
